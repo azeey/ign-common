@@ -456,6 +456,8 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
       auto [texName, texData] = this->LoadTexture(_scene, texturePath,
           this->GenerateTextureName(_fileBaseName, _scene, assimpMat,
           "Metalness"));
+    if (!texData)
+        texName = common::joinPaths(_path, texName);
       pbr.SetMetalnessMap(texName, texData);
     }
     ret = assimpMat->GetTexture(
@@ -465,6 +467,8 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
       auto [texName, texData] = this->LoadTexture(_scene, texturePath,
           this->GenerateTextureName(_fileBaseName, _scene, assimpMat,
           "Roughness"));
+    if (!texData)
+        texName = common::joinPaths(_path, texName);
       pbr.SetRoughnessMap(texName, texData);
     }
   }
@@ -491,7 +495,7 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
       if (texData)
         std::cout << "Getting texture " << texName << " uvIdx: " << uvIdx << " " << texturePath.C_Str() << " pf: " << texData->PixelFormat() << std::endl;
       else{
-        texName = common::joinPaths(_path, texName);
+        texData = std::make_shared<Image>(common::joinPaths(_path, texName));
         std::cout << "Getting texture " << texName << " uvIdx: " << uvIdx << " " << texturePath.C_Str() <<  std::endl;
       }
       pbr.SetLightMap(texName, uvIdx, texData);
@@ -525,6 +529,8 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
   {
     auto [texName, texData] = this->LoadTexture(_scene, texturePath,
         this->GenerateTextureName(_fileBaseName, _scene, assimpMat, "Normal"));
+    if (!texData)
+        texName = common::joinPaths(_path, texName);
     // TODO(luca) different normal map spaces
     pbr.SetNormalMap(texName, NormalMapSpace::TANGENT, texData);
   }
@@ -534,6 +540,8 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
     auto [texName, texData] = this->LoadTexture(_scene, texturePath,
         this->GenerateTextureName(_fileBaseName, _scene, assimpMat,
         "Emissive"));
+    if (!texData)
+        texName = common::joinPaths(_path, texName);
     pbr.SetEmissiveMap(texName, texData);
   }
 #ifndef GZ_ASSIMP_PRE_5_2_0
