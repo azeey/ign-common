@@ -16,12 +16,14 @@
  */
 
 #include <cstddef>
+#include <iostream>
 #include <memory>
 #include <queue>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
+#include "gz/common/Filesystem.hh"
 #include "gz/common/graphics/Types.hh"
 #include "gz/common/AssimpLoader.hh"
 #include "gz/common/Console.hh"
@@ -331,6 +333,7 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
     const aiScene *_scene, unsigned _matIdx, const std::string &_path,
     const std::string &_fileBaseName) const
 {
+  std::cout << "Create material: " << _path << " " << _fileBaseName << std::endl;
   MaterialPtr mat = std::make_shared<Material>();
   aiColor4D color;
   bool specularDefine = false;
@@ -485,11 +488,18 @@ MaterialPtr AssimpLoader::Implementation::CreateMaterial(
     // Separate uv set so treat it as a separate texture
     if (uvIdx > 0)
     {
+      if (texData)
+        std::cout << "Getting texture " << texName << " uvIdx: " << uvIdx << " " << texturePath.C_Str() << " pf: " << texData->PixelFormat() << std::endl;
+      else{
+        texName = common::joinPaths(_path, texName);
+        std::cout << "Getting texture " << texName << " uvIdx: " << uvIdx << " " << texturePath.C_Str() <<  std::endl;
+      }
       pbr.SetLightMap(texName, uvIdx, texData);
     }
     // else split the occlusion data from the metallicRoughness texture
     else
     {
+      std::cout << "Getting texture R channel " << texName << " uvIdx: " << uvIdx << " " << texturePath.C_Str()<< std::endl;
       // R channel contains the occlusion data
       // Note we are still creating an RGBA texture which seems watesful
       // but that's what gz-rendering expects
