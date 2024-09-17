@@ -719,7 +719,7 @@ AssimpLoader::~AssimpLoader()
 Mesh *AssimpLoader::Load(const std::string &_filename)
 {
   Mesh *mesh = new Mesh();
-  std::string path = common::parentPath(_filename);
+  std::string path = common::absPath(common::parentPath(_filename));
   const aiScene* scene = this->dataPtr->importer.ReadFile(_filename,
       aiProcess_JoinIdenticalVertices |
       aiProcess_RemoveRedundantMaterials |
